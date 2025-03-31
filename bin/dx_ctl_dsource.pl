@@ -68,7 +68,7 @@ GetOptions(
   'source_os_user=s'  => \(my $source_os_user),
   'stage_os_user=s'  => \(my $stage_os_user),
   'backup_dir=s' => \(my $backup_dir),
-  'backupfiles=s' => \(my $backupfiles),
+  'bckupfiles=s' => \(my $bckupfiles),
   'dumppwd=s' => \(my $dumppwd),
   'mountbase=s' => \(my $mountbase),
   'logsync=s' => \(my $logsync),
@@ -173,7 +173,7 @@ if (! (($action eq 'detach') || ($action eq 'update')) )  {
 
 
 
-  if (( lc $type eq 'sybase' ) && ( ! ( defined($stage_os_user) && defined($stageinst) && defined($stageenv) && (defined($backup_dir) || defined($backupfiles)) && defined($sourceinst) && defined($sourceenv) ) ) ) {
+  if (( lc $type eq 'sybase' ) && ( ! ( defined($stage_os_user) && defined($stageinst) && defined($stageenv) && (defined($backup_dir) || defined($bckupfiles)) && defined($sourceinst) && defined($sourceenv) ) ) ) {
     print "Options -stage_os_user, -stageinst, -stageenv, -sourceinst, -sourceenv and -backup_dir are required. \n";
     pod2usage(-verbose => 1,  -input=>\*DATA);
     exit (1);
@@ -402,7 +402,7 @@ for my $engine ( sort (@{$engine_list}) ) {
         $ret = $ret + 1;
         last;
       }
-      $jobno = $db->addSource($sourcename,$sourceinst,$sourceenv,$source_os_user,$dbuser,$password,$dsourcename,$group,$logsync,$stageenv,$stageinst,$stage_os_user, $backup_dir,$backupfiles, $dumppwd, $mountbase);
+      $jobno = $db->addSource($sourcename,$sourceinst,$sourceenv,$source_os_user,$dbuser,$password,$dsourcename,$group,$logsync,$stageenv,$stageinst,$stage_os_user, $backup_dir, $dumppwd, $mountbase);
     }
     elsif ($type eq 'mssql') {
       my $db = new MSSQLVDB_obj($engine_obj,$debug);

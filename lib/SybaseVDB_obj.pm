@@ -101,8 +101,8 @@ sub getBackupPath {
 
     logger($self->{_debug}, "Entering SybaseVDB_obj::getBackupPath", 1);
 
-    if (defined($self->{source}->{syncParameters}->{backupfiles})) {
-        return $self->{source}->{syncParameters}->{backupfiles}; # Return backupfiles if available
+    if (defined($self->{source}->{syncParameters}->{bckupfiles})) {
+        return $self->{source}->{syncParameters}->{bckupfiles}; # Return bckupfiles if available
     } else {
         return $self->{source}->{loadBackupPath}; # Otherwise, return loadBackupPath
     }
@@ -117,13 +117,11 @@ sub setBackupPath {
     my $self = shift;
     my $sourcehash = shift;
     my $path = shift;
-    my $backupfiles = shift; # added backupfiles parameter
+    my $bckupfiles = shift; # added bckupfiles parameter
 
     logger($self->{_debug}, "Entering SybaseVDB_obj::setBackupPath", 1);
-    $sourcehash->{loadBackupPath} = $path;
-
-    if (defined($backupfiles)) {
-        $sourcehash->{syncParameters}->{backupfiles} = $backupfiles;
+    if (defined($bckupfiles)) {
+        $sourcehash->{syncParameters}->{bckupfiles} = $bckupfiles;
     } else {
         $sourcehash->{loadBackupPath} = $path;
     }
@@ -330,7 +328,7 @@ sub getConfig {
         my $backup_path = $self->getBackupPath();
         if (ref($backup_path) eq 'ARRAY'){
             my $backupfiles_str = join(",", @{$backup_path});
-            $config = join($joinsep, ($config, "-backupfiles \"$backupfiles_str\""));
+            $config = join($joinsep, ($config, "-bckupfiles \"$backupfiles_str\""));
         } else {
             $config = join($joinsep, ($config, "-backup_dir \"$backup_path\""));
         }
@@ -380,7 +378,7 @@ sub addSource {
     my $backup_dir = shift;
     my $dumppwd = shift;
     my $mountbase = shift;
-    my $backupfiles = shift;
+    my $bckupfiles = shift;
 
     logger($self->{_debug}, "Entering SybaseVDB_obj::addSource",1);
 
@@ -496,8 +494,8 @@ sub addSource {
               "stagingRepository"=> $stagingrepo,
               "loadBackupPath" => $backup_dir,
               "syncParameters"=> {
-                "type" => defined($backupfiles) ? "ASESpecificBackupSyncParameters" : "ASELatestBackupSyncParameters",
-                "backupfiles" => defined($backupfiles) ? $backupfiles : undef,
+                "type" => defined($bckupfiles) ? "ASESpecificBackupSyncParameters" : "ASELatestBackupSyncParameters",
+                "backupFiles" => defined($bckupfiles) ? $bckupfiles : undef,
               }
           }
       );
