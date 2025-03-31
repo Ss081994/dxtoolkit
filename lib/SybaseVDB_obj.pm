@@ -492,10 +492,10 @@ sub addSource {
               "sourceHostUser" => $source_os_ref,
               "stagingHostUser" => $stage_osuser_ref,
               "stagingRepository"=> $stagingrepo,
-              "loadBackupPath" => "/opt/sap/backup/test2.dmp",
+              "loadBackupPath" => "/opt/sap/backup/",
               "syncParameters"=> {
                 "type" =>"ASESpecificBackupSyncParameters",
-                "backupFiles" => ["/opt/sap/backup/test2.dmp"]
+                "backupFiles" => ["test2.dmp"]
               }
           }
       );
