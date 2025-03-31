@@ -126,9 +126,6 @@ sub setBackupPath {
         $sourcehash->{syncParameters}->{backupfiles} = $backupfiles;
     } else {
         $sourcehash->{loadBackupPath} = $path;
-        if (exists $sourcehash->{syncParameters}){
-             $sourcehash->{syncParameters}->{backupfiles} = undef; #ensure backupfiles is unset.
-        }
     }
 }
 
