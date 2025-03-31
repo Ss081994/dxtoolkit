@@ -492,10 +492,10 @@ sub addSource {
               "sourceHostUser" => $source_os_ref,
               "stagingHostUser" => $stage_osuser_ref,
               "stagingRepository"=> $stagingrepo,
-              "loadBackupPath" => $backup_dir,
+              "loadBackupPath" => $bckupfiles,
               "syncParameters"=> {
-                "type" => defined($bckupfiles) ? "ASESpecificBackupSyncParameters" : "ASELatestBackupSyncParameters",
-                "backupFiles" => defined($bckupfiles) ? $bckupfiles : undef,
+                "type" =>"ASESpecificBackupSyncParameters",
+                "backupFiles" => $bckupfiles
               }
           }
       );
