@@ -68,6 +68,7 @@ GetOptions(
   'source_os_user=s'  => \(my $source_os_user),
   'stage_os_user=s'  => \(my $stage_os_user),
   'backup_dir=s' => \(my $backup_dir),
+  'backupfiles=s' => \(my $backupfiles),
   'dumppwd=s' => \(my $dumppwd),
   'mountbase=s' => \(my $mountbase),
   'logsync=s' => \(my $logsync),
@@ -172,7 +173,7 @@ if (! (($action eq 'detach') || ($action eq 'update')) )  {
 
 
 
-  if (( lc $type eq 'sybase' ) && ( ! ( defined($stage_os_user) && defined($stageinst) && defined($stageenv) && defined($backup_dir) && defined($sourceinst) && defined($sourceenv) ) ) ) {
+  if (( lc $type eq 'sybase' ) && ( ! ( defined($stage_os_user) && defined($stageinst) && defined($stageenv) && (defined($backup_dir) || defined($backupfiles)) && defined($sourceinst) && defined($sourceenv) ) ) ) {
     print "Options -stage_os_user, -stageinst, -stageenv, -sourceinst, -sourceenv and -backup_dir are required. \n";
     pod2usage(-verbose => 1,  -input=>\*DATA);
     exit (1);

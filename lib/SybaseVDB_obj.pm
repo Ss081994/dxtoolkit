@@ -367,6 +367,7 @@ sub addSource {
     my $backup_dir = shift;
     my $dumppwd = shift;
     my $mountbase = shift;
+    my $backupfiles = shift;
 
     logger($self->{_debug}, "Entering SybaseVDB_obj::addSource",1);
 
@@ -482,7 +483,8 @@ sub addSource {
               "stagingRepository"=> $stagingrepo,
               "loadBackupPath" => $backup_dir,
               "syncParameters"=> {
-                  "type"=> "ASELatestBackupSyncParameters"
+                "type" => defined($backupfiles) ? "ASESpecificBackupSyncParameters" : "ASELatestBackupSyncParameters",
+                "backupfiles" => defined($backupfiles) ? $backupfiles : undef,
               }
           }
       );
