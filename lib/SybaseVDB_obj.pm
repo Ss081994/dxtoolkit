@@ -101,8 +101,8 @@ sub getBackupPath {
 
     logger($self->{_debug}, "Entering SybaseVDB_obj::getBackupPath", 1);
 
-    if (defined($self->{source}->{syncParameters}->{backupFiles})) {
-        return $self->{source}->{syncParameters}->{backupFiles}; # Return backupFiles if available
+    if (defined($self->{source}->{syncParameters}->{backupfiles})) {
+        return $self->{source}->{syncParameters}->{backupfiles}; # Return backupfiles if available
     } else {
         return $self->{source}->{loadBackupPath}; # Otherwise, return loadBackupPath
     }
@@ -117,17 +117,17 @@ sub setBackupPath {
     my $self = shift;
     my $sourcehash = shift;
     my $path = shift;
-    my $backupFiles = shift; # added backupFiles parameter
+    my $backupfiles = shift; # added backupfiles parameter
 
     logger($self->{_debug}, "Entering SybaseVDB_obj::setBackupPath", 1);
 
-    if (defined($backupFiles)) {
-        $sourcehash->{syncParameters}->{backupFiles} = $backupFiles;
+    if (defined($backupfiles)) {
+        $sourcehash->{syncParameters}->{backupfiles} = $backupFiles;
         $sourcehash->{loadBackupPath} = undef; #ensure loadBackupPath is unset.
     } else {
         $sourcehash->{loadBackupPath} = $path;
         if (exists $sourcehash->{syncParameters}){
-             $sourcehash->{syncParameters}->{backupFiles} = undef; #ensure backupFiles is unset.
+             $sourcehash->{syncParameters}->{backupfiles} = undef; #ensure backupfiles is unset.
         }
     }
 }
@@ -494,7 +494,7 @@ sub addSource {
               "sourceHostUser" => $source_os_ref,
               "stagingHostUser" => $stage_osuser_ref,
               "stagingRepository"=> $stagingrepo,
-              "loadBackupPath" => defined($backupFiles) ? undef : $backup_dir,
+              "loadBackupPath" => $backup_dir,
               "syncParameters"=> {
                 "type" => defined($backupfiles) ? "ASESpecificBackupSyncParameters" : "ASELatestBackupSyncParameters",
                 "backupfiles" => defined($backupfiles) ? $backupfiles : undef,
