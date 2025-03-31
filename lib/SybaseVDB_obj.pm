@@ -120,10 +120,10 @@ sub setBackupPath {
     my $backupfiles = shift; # added backupfiles parameter
 
     logger($self->{_debug}, "Entering SybaseVDB_obj::setBackupPath", 1);
+    $sourcehash->{loadBackupPath} = $path;
 
     if (defined($backupfiles)) {
-        $sourcehash->{syncParameters}->{backupfiles} = $backupFiles;
-        $sourcehash->{loadBackupPath} = undef; #ensure loadBackupPath is unset.
+        $sourcehash->{syncParameters}->{backupfiles} = $backupfiles;
     } else {
         $sourcehash->{loadBackupPath} = $path;
         if (exists $sourcehash->{syncParameters}){
@@ -302,45 +302,48 @@ sub setValidatedMode {
 # parameters: none
 # Return database config
 
-sub getConfig
-{
+sub getConfig {
     my $self = shift;
     my $templates = shift;
     my $backup = shift;
 
-    logger($self->{_debug}, "Entering SybaseVDB_obj::getConfig",1);
+    logger($self->{_debug}, "Entering SybaseVDB_obj::getConfig", 1);
     my $config = '';
     my $joinsep;
 
     if (defined($backup)) {
-      $joinsep = ' ';
+        $joinsep = ' ';
     } else {
-      $joinsep = ',';
+        $joinsep = ',';
     }
 
     if ($self->getType() eq 'VDB') {
-      if ($self->getLogTruncate() eq 'enabled') {
-        $config = join($joinsep,($config, "-truncateLogOnCheckpoint"));
-      }
+        if ($self->getLogTruncate() eq 'enabled') {
+            $config = join($joinsep, ($config, "-truncateLogOnCheckpoint"));
+        }
     } elsif ($self->getType() eq 'dSource') {
-      my $staging_user = $self->getStagingUser();
-      my $staging_env = $self->getStagingEnvironmentName();
-      my $staging_inst = $self->getStagingInst();
+        my $staging_user = $self->getStagingUser();
+        my $staging_env = $self->getStagingEnvironmentName();
+        my $staging_inst = $self->getStagingInst();
 
-      $config = join($joinsep,($config, "-stageinst \"$staging_inst\""));
-      $config = join($joinsep,($config, "-stageenv \"$staging_env\""));
-      $config = join($joinsep,($config, "-stage_os_user \"$staging_user\""));
+        $config = join($joinsep, ($config, "-stageinst \"$staging_inst\""));
+        $config = join($joinsep, ($config, "-stageenv \"$staging_env\""));
+        $config = join($joinsep, ($config, "-stage_os_user \"$staging_user\""));
 
-      my $backup_path = $self->getBackupPath();
-      $config = join($joinsep,($config, "-backup_dir \"$backup_path\""));
+        my $backup_path = $self->getBackupPath();
+        if (ref($backup_path) eq 'ARRAY'){
+            my $backupfiles_str = join(",", @{$backup_path});
+            $config = join($joinsep, ($config, "-backupfiles \"$backupfiles_str\""));
+        } else {
+            $config = join($joinsep, ($config, "-backup_dir \"$backup_path\""));
+        }
     }
 
-    if ( (my $rest) = $config =~ /^,(.*)/ ) {
-      $config = $rest;
+    if ((my $rest) = $config =~ /^,(.*)/) {
+        $config = $rest;
     }
 
     return $config;
-
 }
 
 
