@@ -461,7 +461,7 @@ sub addSource {
       }
 
     } elsif(defined($files)){
-        my @backup_files = map{split(/\n/, $_) }@$files;
+        my @backup_files = map { split(/\s+/, $_) } @$files;
         %dsource_params = (
           "type" => "LinkParameters",
           "group" => $self->{"NEWDB"}->{"container"}->{"group"},
