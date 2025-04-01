@@ -99,14 +99,10 @@ sub new {
 sub getBackupPath {
     my $self = shift;
 
-    logger($self->{_debug}, "Entering SybaseVDB_obj::getBackupPath", 1);
-
-    if (defined($self->{source}->{syncParameters}->{bckupfiles})) {
-        return $self->{source}->{syncParameters}->{bckupfiles}; # Return bckupfiles if available
-    } else {
-        return $self->{source}->{loadBackupPath}; # Otherwise, return loadBackupPath
-    }
+    logger($self->{_debug}, "Entering SybaseVDB_obj::loadBackupPath",1);
+    return $self->{source}->{loadBackupPath};
 }
+
 # Procedure setBackupPath
 # parameters:
 # - source - source hash
@@ -117,14 +113,10 @@ sub setBackupPath {
     my $self = shift;
     my $sourcehash = shift;
     my $path = shift;
-    my $bckupfiles = shift; # added bckupfiles parameter
 
-    logger($self->{_debug}, "Entering SybaseVDB_obj::setBackupPath", 1);
-    if (defined($bckupfiles)) {
-        $sourcehash->{syncParameters}->{bckupfiles} = $bckupfiles;
-    } else {
-        $sourcehash->{loadBackupPath} = $path;
-    }
+    logger($self->{_debug}, "Entering SybaseVDB_obj::setBackupPath",1);
+    $sourcehash->{loadBackupPath} = $path;
+
 }
 
 # Procedure getLogSync
@@ -297,48 +289,45 @@ sub setValidatedMode {
 # parameters: none
 # Return database config
 
-sub getConfig {
+sub getConfig
+{
     my $self = shift;
     my $templates = shift;
     my $backup = shift;
 
-    logger($self->{_debug}, "Entering SybaseVDB_obj::getConfig", 1);
+    logger($self->{_debug}, "Entering SybaseVDB_obj::getConfig",1);
     my $config = '';
     my $joinsep;
 
     if (defined($backup)) {
-        $joinsep = ' ';
+      $joinsep = ' ';
     } else {
-        $joinsep = ',';
+      $joinsep = ',';
     }
 
     if ($self->getType() eq 'VDB') {
-        if ($self->getLogTruncate() eq 'enabled') {
-            $config = join($joinsep, ($config, "-truncateLogOnCheckpoint"));
-        }
+      if ($self->getLogTruncate() eq 'enabled') {
+        $config = join($joinsep,($config, "-truncateLogOnCheckpoint"));
+      }
     } elsif ($self->getType() eq 'dSource') {
-        my $staging_user = $self->getStagingUser();
-        my $staging_env = $self->getStagingEnvironmentName();
-        my $staging_inst = $self->getStagingInst();
+      my $staging_user = $self->getStagingUser();
+      my $staging_env = $self->getStagingEnvironmentName();
+      my $staging_inst = $self->getStagingInst();
 
-        $config = join($joinsep, ($config, "-stageinst \"$staging_inst\""));
-        $config = join($joinsep, ($config, "-stageenv \"$staging_env\""));
-        $config = join($joinsep, ($config, "-stage_os_user \"$staging_user\""));
+      $config = join($joinsep,($config, "-stageinst \"$staging_inst\""));
+      $config = join($joinsep,($config, "-stageenv \"$staging_env\""));
+      $config = join($joinsep,($config, "-stage_os_user \"$staging_user\""));
 
-        my $backup_path = $self->getBackupPath();
-        if (ref($backup_path) eq 'ARRAY'){
-            my $backupfiles_str = join(",", @{$backup_path});
-            $config = join($joinsep, ($config, "-bckupfiles \"$backupfiles_str\""));
-        } else {
-            $config = join($joinsep, ($config, "-backup_dir \"$backup_path\""));
-        }
+      my $backup_path = $self->getBackupPath();
+      $config = join($joinsep,($config, "-backup_dir \"$backup_path\""));
     }
 
-    if ((my $rest) = $config =~ /^,(.*)/) {
-        $config = $rest;
+    if ( (my $rest) = $config =~ /^,(.*)/ ) {
+      $config = $rest;
     }
 
     return $config;
+
 }
 
 
@@ -376,9 +365,9 @@ sub addSource {
     my $inst = shift;
     my $stage_osuser = shift;
     my $backup_dir = shift;
+    my $files = shift;
     my $dumppwd = shift;
     my $mountbase = shift;
-    my $bckupfiles = shift;
 
     logger($self->{_debug}, "Entering SybaseVDB_obj::addSource",1);
 
@@ -471,7 +460,8 @@ sub addSource {
           $dsource_params{source}{dumpCredentials}{password} = $dumppwd;
       }
 
-    } else {
+    } elsif(defined($files)){
+
         %dsource_params = (
           "type" => "LinkParameters",
           "group" => $self->{"NEWDB"}->{"container"}->{"group"},
@@ -492,10 +482,47 @@ sub addSource {
               "sourceHostUser" => $source_os_ref,
               "stagingHostUser" => $stage_osuser_ref,
               "stagingRepository"=> $stagingrepo,
-              "loadBackupPath" => "/opt/sap/backup/",
+              "loadBackupPath" => $backup_dir,
               "syncParameters"=> {
-                "type" =>"ASESpecificBackupSyncParameters",
-                "backupFiles" => ["test2.dmp"]
+                  "type"=> "ASESpecificBackupSyncParameters",
+                  "backupFiles" => $files
+
+              }
+          }
+      );
+
+      if (defined($dumppwd)) {
+          $dsource_params{linkData}{dumpCredentials}{type} = "PasswordCredential";
+          $dsource_params{linkData}{dumpCredentials}{password} = $dumppwd;
+      }
+
+
+    }
+
+    else {
+        %dsource_params = (
+          "type" => "LinkParameters",
+          "group" => $self->{"NEWDB"}->{"container"}->{"group"},
+          "name" => $dsource_name,
+          "linkData" => {
+              "type" => "ASELinkData",
+              "config" => $config->{reference},
+              "sourcingPolicy" => {
+                  "type" => "SourcingPolicy",
+                  "logsyncEnabled" => $logsync_param
+              },
+              "dbCredentials" => {
+                  "type" => "PasswordCredential",
+                  "password" => $password
+              },
+              "dbUser" => $dbuser,
+              "environmentUser" => $source_os_ref,
+              "sourceHostUser" => $source_os_ref,
+              "stagingHostUser" => $stage_osuser_ref,
+              "stagingRepository"=> $stagingrepo,
+              "loadBackupPath" => $backup_dir,
+              "syncParameters"=> {
+                  "type"=> "ASELatestBackupSyncParameters"
               }
           }
       );
