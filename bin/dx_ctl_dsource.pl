@@ -173,7 +173,7 @@ if (! (($action eq 'detach') || ($action eq 'update')) )  {
 
 
 
-  if (( lc $type eq 'sybase' ) && ( ! ( defined($stage_os_user) && defined($stageinst) && defined($stageenv) && defined($backup_dir) && defined($sourceinst) && defined($sourceenv) ) ) ) {
+  if (( lc $type eq 'sybase' ) && ( ! ( defined($stage_os_user) && defined($stageinst) && defined($stageenv) && defined($backup_dir) && defined($files) && defined($sourceinst) && defined($sourceenv) ) ) ) {
     print "Options -stage_os_user, -stageinst, -stageenv, -sourceinst, -sourceenv and -backup_dir are required. \n";
     pod2usage(-verbose => 1,  -input=>\*DATA);
     exit (1);
