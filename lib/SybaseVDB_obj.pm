@@ -365,9 +365,9 @@ sub addSource {
     my $inst = shift;
     my $stage_osuser = shift;
     my $backup_dir = shift;
-    my $files = shift;
     my $dumppwd = shift;
     my $mountbase = shift;
+     my $files = shift;
 
     logger($self->{_debug}, "Entering SybaseVDB_obj::addSource",1);
 
