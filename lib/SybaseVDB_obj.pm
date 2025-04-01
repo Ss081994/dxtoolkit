@@ -485,7 +485,7 @@ sub addSource {
               "loadBackupPath" => $backup_dir,
               "syncParameters"=> {
                   "type"=> "ASESpecificBackupSyncParameters",
-                  "backupFiles" => $files
+                  "backupFiles" => [$files]
 
               }
           }

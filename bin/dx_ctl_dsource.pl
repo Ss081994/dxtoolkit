@@ -68,7 +68,7 @@ GetOptions(
   'source_os_user=s'  => \(my $source_os_user),
   'stage_os_user=s'  => \(my $stage_os_user),
   'backup_dir=s' => \(my $backup_dir),
-  'files=s' => \(my $files),
+  'files=s@' => \(my $files),
   'dumppwd=s' => \(my $dumppwd),
   'mountbase=s' => \(my $mountbase),
   'logsync=s' => \(my $logsync),
